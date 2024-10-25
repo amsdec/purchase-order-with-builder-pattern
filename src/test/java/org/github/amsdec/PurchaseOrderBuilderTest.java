@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import lombok.Getter;
@@ -13,24 +14,31 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
 
     private final PurchaseOrder result = new PurchaseOrder();
 
+    private PurchaseOrderStringParser parser;
+
+    @Before
+    public void setup() {
+        this.parser = new PurchaseOrderStringParser(this);
+    }
+
     @Test
     public void nullStringGeneratesNullResult() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse(null);
+        this.parser.parse(null);
+
         Assert.assertEquals("", this.result.toString());
     }
 
     @Test
     public void emptyStringGeneratesEmptyResult() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("");
+        this.parser.parse("");
+
         Assert.assertEquals("", this.result.toString());
     }
 
     @Test
     public void headerWithNumberOnlyGeneratesResultWithNumber() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("10001");
+        this.parser.parse("10001");
+
         Assert.assertEquals("" //
                 + "N:10001\n" //
                 + "", this.result.toString());
@@ -38,8 +46,8 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
 
     @Test
     public void headerWithNumberOnlyWithPipeGeneratesResultWithNumber() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("10001|");
+        this.parser.parse("10001|");
+
         Assert.assertEquals("" //
                 + "N:10001\n" //
                 + "", this.result.toString());
@@ -47,8 +55,8 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
 
     @Test
     public void headerWithNumberAndDateOnlyGeneratesResultWithNumberAndDate() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("10001|2021-10-22 17:13:31");
+        this.parser.parse("10001|2021-10-22 17:13:31");
+
         Assert.assertEquals("" //
                 + "N:10001\n" //
                 + "D:2021-10-22 17:13:31\n" //
@@ -57,8 +65,8 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
 
     @Test
     public void headerWithNumberAndDateWithPipeOnlyGeneratesResultWithNumberAndDate() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("10001|2021-10-22 17:13:31|");
+        this.parser.parse("10001|2021-10-22 17:13:31|");
+
         Assert.assertEquals("" //
                 + "N:10001\n" //
                 + "D:2021-10-22 17:13:31\n" //
@@ -67,8 +75,8 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
 
     @Test
     public void fullHeaderGeneratesResultWithFullHeder() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("10001|2021-10-22 17:13:31|Ofificina");
+        this.parser.parse("10001|2021-10-22 17:13:31|Ofificina");
+
         Assert.assertEquals("" //
                 + "N:10001\n" //
                 + "D:2021-10-22 17:13:31\n" //
@@ -78,8 +86,8 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
 
     @Test
     public void fullHeaderAndEmptyRequestorGeneratesEmptyRequestor() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("10001|2021-10-22 17:13:31|Ofificina\n");
+        this.parser.parse("10001|2021-10-22 17:13:31|Ofificina\n");
+
         Assert.assertEquals("" //
                 + "N:10001\n" //
                 + "D:2021-10-22 17:13:31\n" //
@@ -89,9 +97,9 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
 
     @Test
     public void fullHeaderAndRequestorRfcOnlyGeneratesRequestorWithRfc() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("10001|2021-10-22 17:13:31|Ofificina\n" //
+        this.parser.parse("10001|2021-10-22 17:13:31|Ofificina\n" //
                 + "FOC140516174");
+
         Assert.assertEquals("" //
                 + "N:10001\n" //
                 + "D:2021-10-22 17:13:31\n" //
@@ -102,10 +110,10 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
 
     @Test
     public void fullHeaderAndFullRequestorGeneratesFullRequestor() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("" //
+        this.parser.parse("" //
                 + "10001|2021-10-22 17:13:31|Ofificina\n" //
                 + "FOC140516174|Focaltec S.A.P.I. de C.V.");
+
         Assert.assertEquals("" //
                 + "N:10001\n" //
                 + "D:2021-10-22 17:13:31\n" //
@@ -117,11 +125,11 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
 
     @Test
     public void fullHeaderAndFullRequestorAndProviderRfcOnlyGeneratesProviderWithRfc() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("" //
+        this.parser.parse("" //
                 + "10001|2021-10-22 17:13:31|Ofificina\n" //
                 + "FOC140516174|Focaltec S.A.P.I. de C.V.\n" //
                 + "MOSA8311152G0");
+
         Assert.assertEquals("" //
                 + "N:10001\n" //
                 + "D:2021-10-22 17:13:31\n" //
@@ -134,11 +142,11 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
 
     @Test
     public void fullHeaderAndFullRequestorAndFullProviderGeneratesFullProvider() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("" //
+        this.parser.parse("" //
                 + "10001|2021-10-22 17:13:31|Ofificina\n" //
                 + "FOC140516174|Focaltec S.A.P.I. de C.V.\n" //
                 + "MOSA8311152G0|Alberto Montellano Sandoval");
+
         Assert.assertEquals("" //
                 + "N:10001\n" //
                 + "D:2021-10-22 17:13:31\n" //
@@ -152,12 +160,12 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
 
     @Test
     public void productWithIdOnlyGeneratesZeroQuantity() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("" //
+        this.parser.parse("" //
                 + "10001|2021-10-22 17:13:31|Ofificina\n" //
                 + "FOC140516174|Focaltec S.A.P.I. de C.V.\n" //
                 + "MOSA8311152G0|Alberto Montellano Sandoval\n" //
                 + "P1234567890");
+
         Assert.assertEquals("" //
                 + "N:10001\n" //
                 + "D:2021-10-22 17:13:31\n" //
@@ -174,12 +182,12 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
 
     @Test
     public void productWithIdAndQuantityOnlyGeneratesWithQuantity() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("" //
+        this.parser.parse("" //
                 + "10001|2021-10-22 17:13:31|Ofificina\n" //
                 + "FOC140516174|Focaltec S.A.P.I. de C.V.\n" //
                 + "MOSA8311152G0|Alberto Montellano Sandoval\n" //
                 + "P1234567890|5");
+
         Assert.assertEquals("" //
                 + "N:10001\n" //
                 + "D:2021-10-22 17:13:31\n" //
@@ -196,12 +204,12 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
 
     @Test
     public void fullProductGeneratesWithFullProduct() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("" //
+        this.parser.parse("" //
                 + "10001|2021-10-22 17:13:31|Ofificina\n" //
                 + "FOC140516174|Focaltec S.A.P.I. de C.V.\n" //
                 + "MOSA8311152G0|Alberto Montellano Sandoval\n" //
                 + "P1234567890|5|Caja de 100 tornillos");
+
         Assert.assertEquals("" //
                 + "N:10001\n" //
                 + "D:2021-10-22 17:13:31\n" //
@@ -218,14 +226,14 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
 
     @Test
     public void twoProductsGeneratesWithTwoProducts() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("" //
+        this.parser.parse("" //
                 + "10001|2021-10-22 17:13:31|Ofificina\n" //
                 + "FOC140516174|Focaltec S.A.P.I. de C.V.\n" //
                 + "MOSA8311152G0|Alberto Montellano Sandoval\n" //
                 + "P1234567890|5|Caja de 100 tornillos\n" //
                 + "P0000012345|5|Caja de 100 tuercas\n" //
                 + "");
+
         Assert.assertEquals("" //
                 + "N:10001\n" //
                 + "D:2021-10-22 17:13:31\n" //
@@ -245,8 +253,7 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
 
     @Test
     public void threeProductsGeneratesWithThreeProducts() {
-        final PurchaseOrderStringParser parser = new PurchaseOrderStringParser(this);
-        parser.parse("" //
+        this.parser.parse("" //
                 + "10001|2021-10-22 17:13:31|Ofificina\n" //
                 + "FOC140516174|Focaltec S.A.P.I. de C.V.\n" //
                 + "MOSA8311152G0|Alberto Montellano Sandoval\n" //
@@ -254,6 +261,7 @@ public class PurchaseOrderBuilderTest implements PurchaseOrderBuilder {
                 + "P0000012345|5|Caja de 100 tuercas\n" //
                 + "P0000056789|5|Caja de 100 arandelas\n" //
                 + "");
+
         Assert.assertEquals("" //
                 + "N:10001\n" //
                 + "D:2021-10-22 17:13:31\n" //
