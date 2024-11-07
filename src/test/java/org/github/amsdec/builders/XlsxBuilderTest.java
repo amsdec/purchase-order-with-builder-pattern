@@ -10,15 +10,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class XlsBuilderTest {
+public class XlsxBuilderTest {
 
     private PurchaseOrderStringParser parser;
 
-    private XlsBuilder builder;
+    private XlsxBuilder builder;
 
     @Before
     public void setup() {
-        this.builder = new XlsBuilder();
+        this.builder = new XlsxBuilder();
         this.parser = new PurchaseOrderStringParser(this.builder);
     }
 
@@ -235,4 +235,5 @@ public class XlsBuilderTest {
 
         return table.toString();
     }
+
 }
